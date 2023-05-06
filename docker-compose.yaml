@@ -1,0 +1,48 @@
+version: '3'
+services:
+    app:
+        build: docker/php
+        working_dir: /var/www
+        container_name: stthfi-server
+        volumes:
+            - .:/var/www
+        networks:
+            - stthfi-network
+        depends_on:
+            - db
+        extra_hosts:
+            - host.docker.internal:host-gateway
+        environment:
+            - XDEBUG_SESSION=1
+    nginx:
+        build: ./docker/nginx
+        container_name: stthfi-nginx
+        restart: always
+        tty: true
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/var/www
+        networks:
+            - stthfi-network
+        depends_on:
+            - app
+    db:
+        build: ./docker/mysql
+        container_name: stthfi-db
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        tty: true
+        ports:
+            - "3306:3306"
+        volumes:
+            - ./docker/mysql/dbdata:/var/lib/mysql
+            - ./docker/mysql:/docker-entrypoint-initdb.d
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - TZ=America/Sao_Paulo
+        networks:
+            - stthfi-network
+networks:
+    stthfi-network:
+        driver: bridge
