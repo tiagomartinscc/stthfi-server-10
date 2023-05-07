@@ -17,5 +17,15 @@ jobs:
           server: ${{ secrets.ftp_host }}
           username: ${{ secrets.ftp_user }}
           password: ${{ secrets.ftp_password }}
-          local-dir: ./app/
-          server-dir: /laravel/app/
+          local-dir: ./
+          server-dir: /laravel/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/vendor/**
+            **/docker/**
+            **/storage/**
+            .env
+            docker-compose.yaml
+
